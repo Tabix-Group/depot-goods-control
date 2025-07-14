@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useUsers } from "@/hooks/useUsers";
 import { 
   Users as UsersIcon, 
   Search, 
@@ -33,68 +34,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const users = [
-  {
-    id: "1",
-    name: "Juan Pérez",
-    email: "juan.perez@empresa.com",
-    phone: "+54 11 1234-5678",
-    role: "Supervisor",
-    department: "Depósito",
-    status: "activo",
-    lastLogin: "2024-01-15 14:30",
-    permissions: ["leer", "escribir", "administrar"],
-    avatar: ""
-  },
-  {
-    id: "2",
-    name: "María García", 
-    email: "maria.garcia@empresa.com",
-    phone: "+54 11 2345-6789",
-    role: "Operario",
-    department: "Depósito",
-    status: "activo",
-    lastLogin: "2024-01-15 10:15",
-    permissions: ["leer", "escribir"],
-    avatar: ""
-  },
-  {
-    id: "3",
-    name: "Carlos López",
-    email: "carlos.lopez@empresa.com", 
-    phone: "+54 11 3456-7890",
-    role: "Operario",
-    department: "Depósito",
-    status: "activo",
-    lastLogin: "2024-01-15 11:45",
-    permissions: ["leer", "escribir"],
-    avatar: ""
-  },
-  {
-    id: "4",
-    name: "Ana Martínez",
-    email: "ana.martinez@empresa.com",
-    phone: "+54 11 4567-8901",
-    role: "Analista",
-    department: "Control de Stock",
-    status: "activo", 
-    lastLogin: "2024-01-15 09:20",
-    permissions: ["leer"],
-    avatar: ""
-  },
-  {
-    id: "5",
-    name: "Roberto Silva",
-    email: "roberto.silva@empresa.com",
-    phone: "+54 11 5678-9012",
-    role: "Operario",
-    department: "Depósito",
-    status: "inactivo",
-    lastLogin: "2024-01-10 16:00",
-    permissions: ["leer", "escribir"],
-    avatar: ""
-  }
-];
+
 
 const roles = {
   "Supervisor": { color: "bg-primary", permissions: "Administrador" },
@@ -102,8 +42,8 @@ const roles = {
   "Analista": { color: "bg-warning", permissions: "Solo lectura" }
 };
 
-export default function Users() {
   const [searchQuery, setSearchQuery] = useState("");
+  const { users, loading, error, addUser, updateUser, deleteUser, refetch } = useUsers();
 
   const getInitials = (name: string) => {
     return name.split(" ").map(n => n[0]).join("").toUpperCase();
@@ -239,101 +179,107 @@ export default function Users() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Usuario</TableHead>
-                <TableHead>Contacto</TableHead>
-                <TableHead>Rol</TableHead>
-                <TableHead>Departamento</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead>Último Acceso</TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarImage src={user.avatar} />
-                        <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium">{user.name}</p>
-                        <p className="text-sm text-muted-foreground">ID: {user.id}</p>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <Mail className="h-3 w-3 text-muted-foreground" />
-                        <span className="text-sm">{user.email}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Phone className="h-3 w-3 text-muted-foreground" />
-                        <span className="text-sm">{user.phone}</span>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="space-y-1">
-                      {getRoleBadge(user.role)}
-                      <p className="text-xs text-muted-foreground">
-                        {roles[user.role as keyof typeof roles]?.permissions}
-                      </p>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{user.department}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    {getStatusBadge(user.status)}
-                  </TableCell>
-                  <TableCell>
-                    <div>
-                      <p className="text-sm">{user.lastLogin.split(" ")[0]}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {user.lastLogin.split(" ")[1]}
-                      </p>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          •••
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="gap-2">
-                          <Eye className="h-4 w-4" />
-                          Ver Perfil
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="gap-2">
-                          <Edit className="h-4 w-4" />
-                          Editar Usuario
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="gap-2">
-                          <Shield className="h-4 w-4" />
-                          Gestionar Permisos
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="gap-2 text-destructive">
-                          <Trash2 className="h-4 w-4" />
-                          Desactivar Usuario
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
+          {loading ? (
+            <div>Cargando usuarios...</div>
+          ) : error ? (
+            <div className="text-destructive">Error: {error}</div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Usuario</TableHead>
+                  <TableHead>Contacto</TableHead>
+                  <TableHead>Rol</TableHead>
+                  <TableHead>Departamento</TableHead>
+                  <TableHead>Estado</TableHead>
+                  <TableHead>Último Acceso</TableHead>
+                  <TableHead className="text-right">Acciones</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {users.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Avatar>
+                          <AvatarImage src={user.avatar_url || ""} />
+                          <AvatarFallback>{getInitials(user.full_name || user.name || "?")}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium">{user.full_name || user.name || "Sin nombre"}</p>
+                          <p className="text-sm text-muted-foreground">ID: {user.id}</p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <Mail className="h-3 w-3 text-muted-foreground" />
+                          <span className="text-sm">{user.email}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Phone className="h-3 w-3 text-muted-foreground" />
+                          <span className="text-sm">{user.phone || "-"}</span>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-1">
+                        {getRoleBadge(user.role || "")}
+                        <p className="text-xs text-muted-foreground">
+                          {roles[user.role as keyof typeof roles]?.permissions}
+                        </p>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{user.department || "-"}</Badge>
+                    </TableCell>
+                    <TableCell>
+                      {getStatusBadge(user.status || "")}
+                    </TableCell>
+                    <TableCell>
+                      <div>
+                        <p className="text-sm">{user.last_login ? user.last_login.split(" ")[0] : "-"}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {user.last_login ? user.last_login.split(" ")[1] : ""}
+                        </p>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            •••
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem className="gap-2">
+                            <Eye className="h-4 w-4" />
+                            Ver Perfil
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="gap-2">
+                            <Edit className="h-4 w-4" />
+                            Editar Usuario
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="gap-2">
+                            <Shield className="h-4 w-4" />
+                            Gestionar Permisos
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem className="gap-2 text-destructive" onClick={() => deleteUser(user.id)}>
+                            <Trash2 className="h-4 w-4" />
+                            Desactivar Usuario
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
 
